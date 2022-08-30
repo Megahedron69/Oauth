@@ -1,23 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+import Loginform from "./Components/Loginform";
+import Home from "./Components/Home";
+import Signupform from "./Components/Signupform";
+import { Error } from "./Components/Error";
+import "./firebaseconfig";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <BrowserRouter>
+        <Routes>
+          <Route index element={<Signupform />} />
+          <Route path="login" element={<Loginform />} />
+          <Route path="home" element={<Home />} />
+          <Route path="*" element={<Error errorcode={404} />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
