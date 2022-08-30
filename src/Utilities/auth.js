@@ -23,7 +23,6 @@ export const signins = (email, password) => {
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-      // alert(`Error: ${errorCode}:${errorMessage}`);
       const increase = () => {
         i++;
         if (i > 3) {
@@ -60,7 +59,7 @@ export const signingoogle = () => {
       const errorMessage = error.message;
       const email = error.customData.email;
       const credential = GoogleAuthProvider.credentialFromError(error);
-      alert("Catastrophical failure occured");
+      alert(`Error: ${errorCode}:${errorMessage}`);
     });
 };
 
@@ -73,15 +72,13 @@ export const signingithub = () => {
       const token = credential.accessToken;
       const user = result.user;
       window.location = "/home";
-      console.log("success");
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
       const email = error.customData.email;
       const credential = GithubAuthProvider.credentialFromError(error);
-      console.log(errorMessage);
-      alert("Error! Please try again");
+      alert(`Error: ${errorCode}:${errorMessage}`);
     });
 };
 
@@ -95,7 +92,7 @@ export const signupwithemail = (emailz, passwordz) => {
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-      alert("Incorrect user details entered");
+      alert(`Error: ${errorCode}:${errorMessage}`);
     });
 };
 
@@ -112,8 +109,7 @@ export const signinwithyahoo = () => {
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-      console.log(errorMessage);
-      alert("Error! Please try again");
+      alert(`Error: ${errorCode}:${errorMessage}`);
     });
 };
 
@@ -133,8 +129,7 @@ export const signinwithtwitter = () => {
       const errorMessage = error.message;
       const email = error.customData.email;
       const credential = TwitterAuthProvider.credentialFromError(error);
-      console.log(errorMessage);
-      alert("Error! Please try again");
+      alert(`Error: ${errorCode}:${errorMessage}`);
     });
 };
 
@@ -147,8 +142,7 @@ export const signinanon = () => {
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-      console.log(errorMessage);
-      alert("Error! Please try again");
+      alert(`Error: ${errorCode}:${errorMessage}`);
     });
 };
 
