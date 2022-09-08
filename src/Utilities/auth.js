@@ -157,6 +157,7 @@ export const signOutUser = () => {
       alert("Unable to signout please try again later");
     });
 };
+
 // export const signinwithnumber = () => {
 //   const auth = getAuth();
 //   window.recaptchaVerifier = new RecaptchaVerifier(
