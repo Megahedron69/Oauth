@@ -6,9 +6,12 @@ import {
   signinwithyahoo,
   signinwithtwitter,
 } from "../Utilities/auth";
+import { useNavigate } from "react-router-dom";
 import { persis } from "../Utilities/persistence";
 
 const Socialmediacards = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-row items-center justify-center lg:justify-start">
       <p className="text-lg mb-0 mr-4">Sign in with</p>
@@ -126,8 +129,7 @@ const Socialmediacards = () => {
       <button
         type="button"
         onClick={() => {
-          //otp function from auth.js
-          persis("session");
+          navigate("/otplogin");
         }}
         data-mdb-ripple="true"
         data-mdb-ripple-color="light"

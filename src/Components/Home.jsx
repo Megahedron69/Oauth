@@ -23,7 +23,7 @@ const Home = () => {
         <div className="flex justify-center align-middle flex-col m-5 p-7 items-center">
           <img
             alt="brand"
-            src="https://acowale.com/wp-content/uploads/2021/01/Acowale-Logo-Blue.png"
+            src="https://img.icons8.com/3d-fluency/100/000000/globe-africa.png"
             loading="lazy"
           />
           <h1 className="text-3xl font-extrabold text-center p-6 m-4">

@@ -158,30 +158,46 @@ export const signOutUser = () => {
     });
 };
 
-// export const signinwithnumber = () => {
-//   const auth = getAuth();
-//   window.recaptchaVerifier = new RecaptchaVerifier(
-//     "sign-in-button",
-//     {
-//       size: "invisible",
-//       callback: (response) => {
-//         // reCAPTCHA solved, allow signInWithPhoneNumber.
-//         onSignInSubmit();
-//       },
-//     },
-//     auth
-//   );
-//   const phoneNumber = getPhoneNumberFromUserInput();
-//   const appVerifier = window.recaptchaVerifier;
-//   signInWithPhoneNumber(auth, phoneNumber, appVerifier)
-//     .then((confirmationResult) => {
-//       // SMS sent. Prompt user to type the code from the message, then sign the
-//       // user in with confirmationResult.confirm(code).
-//       window.confirmationResult = confirmationResult;
-//       // ...
-//     })
-//     .catch((error) => {
-//       // Error; SMS not sent
-//       // ...
-//     });
-// };
+const setUpRecaptcha = () => {
+  const auth = getAuth();
+  window.recaptchaVerifier = new RecaptchaVerifier(
+    "recaptcha-container",
+    {
+      size: "invisible",
+      callback: (response) => {
+        onSignInSubmit();
+      },
+    },
+    auth
+  );
+};
+
+export const onSignInSubmit = (e, phn) => {
+  const auth = getAuth();
+  e.preventDefault();
+  setUpRecaptcha();
+  let phoneNumber = `+${phn}`;
+  console.log(phoneNumber);
+  let appVerifier = window.recaptchaVerifier;
+  signInWithPhoneNumber(auth, phoneNumber, appVerifier)
+    .then(function (confirmationResult) {
+      window.confirmationResult = confirmationResult;
+      alert("OTP is sent");
+    })
+    .catch(function (error) {
+      alert(error);
+    });
+};
+
+export const onSubmitOtp = (e, ote) => {
+  e.preventDefault();
+  let opt_number = `${ote}`;
+  window.confirmationResult
+    .confirm(opt_number)
+    .then((confirmationResult) => {
+      window.open("/home", "_self");
+    })
+    .catch((error) => {
+      alert(`${error.message}\nPlease re-enter the correct OTP`);
+    });
+};
