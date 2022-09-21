@@ -1,8 +1,12 @@
 import { useState } from "react";
 import OtpInput from "react18-input-otp";
 import { onSubmitOtp } from "../../Utilities/auth";
+import Countdown from "react-countdown";
+import { ResendOtp } from "../../Utilities/auth";
 
 const OTP = ({ phoneNum }) => {
+  const otpTimer = 120000;
+  const [startTimer, setstartTimer] = useState(true);
   const [Otp, setOtp] = useState("");
 
   const getMaskedNumber = (string) => {
@@ -11,15 +15,17 @@ const OTP = ({ phoneNum }) => {
     return endDigits.padStart(string.length, "*");
   };
 
+  const renderer = ({ minutes, seconds }) => {
+    return (
+      <span>
+        {minutes}:{seconds} seconds
+      </span>
+    );
+  };
+
   return (
     <div>
-      <form
-        className=" h-64 py-3 rounded text-center"
-        onSubmit={(e, mtp) => {
-          mtp = Otp;
-          onSubmitOtp(e, mtp);
-        }}
-      >
+      <form className=" h-64 py-3 rounded text-center">
         <h1 className="text-3xl font-bold">OTP Verification</h1>
         <div className="flex flex-col mt-4">
           <span className="text-lg font-semibold">
@@ -55,14 +61,37 @@ const OTP = ({ phoneNum }) => {
             focusStyle={{
               border: "2px solid #1c64f2",
             }}
-            isInputSecure={true}
+            isInputSecure={false}
+            onSubmit={(mtp) => {
+              mtp = Otp;
+              onSubmitOtp(mtp);
+            }}
           />
         </div>
         <div className="flex justify-center text-center mt-5">
-          <button className="flex items-center text-blue-700 hover:text-blue-900 cursor-pointer">
-            <span className="font-bold">Resend OTP</span>
-            <i className="bx bx-caret-right ml-1"></i>
-          </button>
+          {startTimer ? (
+            <span className="font-bold text-gray-400 cursor-not-allowed">
+              Resend OTP in{" "}
+              <Countdown
+                date={Date.now() + otpTimer}
+                renderer={renderer}
+                onComplete={(prev) => {
+                  setstartTimer(!prev);
+                }}
+              />
+            </span>
+          ) : (
+            <span
+              onClick={(e, phonez) => {
+                phonez = phoneNum;
+                ResendOtp(e, phonez);
+                setstartTimer(true);
+              }}
+              className="font-bold text-green-400 cursor-pointer"
+            >
+              Resend OTP
+            </span>
+          )}
         </div>
       </form>
     </div>

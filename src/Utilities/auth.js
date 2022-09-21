@@ -10,7 +10,10 @@ import {
   signInAnonymously,
   RecaptchaVerifier,
   signInWithPhoneNumber,
+  sendPasswordResetEmail,
 } from "firebase/auth";
+import alertify from "alertifyjs";
+import "alertifyjs/build/css/alertify.css";
 
 let i = 0;
 export const signins = (email, password) => {
@@ -33,11 +36,19 @@ export const signins = (email, password) => {
             alert("Comply to proceed");
           }
         } else {
-          alert(
-            `Error: ${errorCode}.\nIncorrect try ${i}.\n${
-              3 - i
-            } tries reamaning `
-          );
+          alertify
+            .alert(
+              `Error: ${errorCode}.
+              \n${3 - i} tries reamaning `
+            )
+            .setting({
+              label: "Close",
+              onok: function () {
+                alertify.error("Retry login");
+              },
+            })
+            .show()
+            .set("frameless", true);
         }
       };
       increase();
@@ -59,7 +70,7 @@ export const signingoogle = () => {
       const errorMessage = error.message;
       const email = error.customData.email;
       const credential = GoogleAuthProvider.credentialFromError(error);
-      alert(`Error: ${errorCode}:${errorMessage}`);
+      alertify.error(`Login Failed:${errorCode}`);
     });
 };
 
@@ -78,7 +89,7 @@ export const signingithub = () => {
       const errorMessage = error.message;
       const email = error.customData.email;
       const credential = GithubAuthProvider.credentialFromError(error);
-      alert(`Error: ${errorCode}:${errorMessage}`);
+      alertify.error(`Login Failed:${errorCode}`);
     });
 };
 
@@ -92,7 +103,7 @@ export const signupwithemail = (emailz, passwordz) => {
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-      alert(`Error: ${errorCode}:${errorMessage}`);
+      alertify.error(`Login Failed:${errorCode}`);
     });
 };
 
@@ -109,7 +120,7 @@ export const signinwithyahoo = () => {
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-      alert(`Error: ${errorCode}:${errorMessage}`);
+      alertify.error(`Login Failed:${errorCode}`);
     });
 };
 
@@ -129,7 +140,7 @@ export const signinwithtwitter = () => {
       const errorMessage = error.message;
       const email = error.customData.email;
       const credential = TwitterAuthProvider.credentialFromError(error);
-      alert(`Error: ${errorCode}:${errorMessage}`);
+      alertify.error(`Login Failed:${errorCode}`);
     });
 };
 
@@ -142,7 +153,7 @@ export const signinanon = () => {
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-      alert(`Error: ${errorCode}:${errorMessage}`);
+      alertify.error(`Login Failed:${errorCode}`);
     });
 };
 
@@ -154,7 +165,7 @@ export const signOutUser = () => {
       window.location = "/login";
     })
     .catch(function (error) {
-      alert("Unable to signout please try again later");
+      alertify.error("Unable to signout please try again later");
     });
 };
 
@@ -177,20 +188,18 @@ export const onSignInSubmit = (e, phn) => {
   e.preventDefault();
   setUpRecaptcha();
   let phoneNumber = `+${phn}`;
-  console.log(phoneNumber);
   let appVerifier = window.recaptchaVerifier;
   signInWithPhoneNumber(auth, phoneNumber, appVerifier)
     .then(function (confirmationResult) {
       window.confirmationResult = confirmationResult;
-      alert("OTP is sent");
+      alertify.success("OTP is sent");
     })
     .catch(function (error) {
-      alert(error);
+      alertify.error(`${error}`);
     });
 };
 
-export const onSubmitOtp = (e, ote) => {
-  e.preventDefault();
+export const onSubmitOtp = (ote) => {
   let opt_number = `${ote}`;
   window.confirmationResult
     .confirm(opt_number)
@@ -198,6 +207,55 @@ export const onSubmitOtp = (e, ote) => {
       window.open("/home", "_self");
     })
     .catch((error) => {
-      alert(`${error.message}\nPlease re-enter the correct OTP`);
+      alertify.error(`${error.message}\nPlease re-enter the correct OTP`);
     });
+};
+
+export const ResendOtp = (e, phne) => {
+  e.preventDefault();
+  const auth = getAuth();
+  const phoneNumber = `+${phne}`;
+  let appVerifier = window.recaptchaVerifier;
+  signInWithPhoneNumber(auth, phoneNumber, appVerifier)
+    .then(function (confirmationResult) {
+      window.confirmationResult = confirmationResult;
+      alertify.success("OTP is sent");
+    })
+    .catch(function (error) {
+      alertify.error(`${error}`);
+    });
+};
+
+export const resetPass = (e) => {
+  e.preventDefault();
+  const auth = getAuth();
+  const filter =
+    /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+  const resetEmail = alertify
+    .prompt("Enter Your Email")
+    .set({
+      modal: true,
+      transition: "fade",
+      invokeOnCloseOff: true,
+      type: "email",
+      onok: () => {
+        let emaile = resetEmail.settings.value;
+        if (!filter.test(emaile)) {
+          alertify.error("Please Enter a valid email");
+        } else {
+          sendPasswordResetEmail(auth, emaile)
+            .then(() => {
+              alertify.success("Reset link sent to email");
+            })
+            .catch((error) => {
+              alertify.error(`${error}.Try again later`);
+            });
+        }
+      },
+      oncancel: () => {
+        alertify.error("Password reset cancelled");
+        resetEmail.settings.value = "";
+      },
+    })
+    .show();
 };
