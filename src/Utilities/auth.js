@@ -28,27 +28,13 @@ export const signins = (email, password) => {
       const errorMessage = error.message;
       const increase = () => {
         i++;
-        if (i > 3) {
-          const name = prompt("Please enter `Acowale` to proceed");
-          if (name === "Acowale") {
-            i = 0;
-          } else {
-            alert("Comply to proceed");
-          }
-        } else {
-          alertify
-            .alert(
-              `Error: ${errorCode}.
-              \n${3 - i} tries reamaning `
-            )
-            .setting({
-              label: "Close",
-              onok: function () {
-                alertify.error("Retry login");
-              },
-            })
-            .show()
-            .set("frameless", true);
+        console.log(i);
+        if (i <= 3) {
+          console.log(i);
+          alertify.warning(
+            `Error: ${errorCode}.
+              \n${3 - i} tr${i === 2 ? "y" : "ies"} reamaning `
+          );
         }
       };
       increase();
@@ -162,7 +148,7 @@ export const signOutUser = () => {
   auth
     .signOut(auth)
     .then(function () {
-      window.location = "/login";
+      window.location = "/";
     })
     .catch(function (error) {
       alertify.error("Unable to signout please try again later");

@@ -11,8 +11,8 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route index element={<Signupform />} />
-          <Route path="login" element={<Loginform />} />
+          <Route index element={<Loginform />} />
+          <Route path="signup" element={<Signupform />} />
           <Route path="otplogin" element={<Phonelogin />} />
           <Route path="home" element={<Home />} />
           <Route path="*" element={<Error errorcode={404} />} />

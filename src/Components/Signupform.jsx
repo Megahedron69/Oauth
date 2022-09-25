@@ -31,9 +31,7 @@ export default function Registration() {
     <div>
       <div className="flex flex-col items-center min-h-screen pt-6 sm:justify-center sm:pt-0 bg-gray-50">
         <div>
-          <a href="/">
-            <h3 className="text-4xl font-bold text-blue-600">Sign Up</h3>
-          </a>
+          <h3 className="text-4xl font-bold text-blue-600">Sign Up</h3>
         </div>
         <div className="w-full px-6 py-4 mt-6 overflow-hidden bg-white shadow-md sm:max-w-lg sm:rounded-lg">
           <form onSubmit={handlesubmit}>
@@ -101,7 +99,7 @@ export default function Registration() {
           <div className="mt-4 text-grey-600">
             Already have an account?{" "}
             <span>
-              <Link className="text-blue-600 hover:underline" to="/login">
+              <Link className="text-blue-600 hover:underline" to="/">
                 Log in
               </Link>
             </span>
