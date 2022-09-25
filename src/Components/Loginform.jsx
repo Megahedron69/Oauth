@@ -47,7 +47,6 @@ const Loginform = () => {
     signins(formdata.email, formdata.password);
     setformdata(initialState);
     settogglePass(false);
-    seterrNo(1);
   };
 
   return (
