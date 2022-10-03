@@ -1,19 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Socialmediacards from "./Socialmediacards";
 import { persis } from "../Utilities/persistence";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { signins } from "../Utilities/auth";
 import { resetPass } from "../Utilities/auth";
 import alertify from "alertifyjs";
+import { getAuth } from "firebase/auth";
 import Countdown from "react-countdown";
+import CookieConsent from "react-cookie-consent";
 
 const Loginform = () => {
   const initialState = { email: "", password: "" };
+  const navigate = useNavigate();
 
   const [isChecked, setisChecked] = useState(false);
   const [formdata, setformdata] = useState(initialState);
   const [togglePass, settogglePass] = useState(false);
   const [errNo, seterrNo] = useState(1);
+
+  useEffect(() => {
+    const auth = getAuth();
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        console.log(user);
+        navigate("/home");
+      }
+    });
+  });
 
   const handlechange = (event) => {
     const { name, value } = event.target;
@@ -63,6 +76,21 @@ const Loginform = () => {
           ""
         )}
       </div>
+
+      <CookieConsent
+        location="bottom"
+        buttonText="Accept Cookies"
+        onAccept={() => {
+          alertify.success("Cookies accepted");
+        }}
+        cookieName="firebasecookieconsent"
+        containerClasses="bg-gray-100"
+        buttonClasses="py-2 px-8 bg-green-400 hover:bg-green-500 text-white rounded font-bold text-sm shadow-xl"
+        expires={150}
+      >
+        This website uses cookies to enhance the user experience.{" "}
+      </CookieConsent>
+
       <section className="h-screen">
         <div className="px-6 h-full text-gray-800">
           <div className="flex xl:justify-center lg:justify-between justify-center items-center flex-wrap h-full g-6">
