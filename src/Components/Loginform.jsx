@@ -22,7 +22,6 @@ const Loginform = () => {
     const auth = getAuth();
     auth.onAuthStateChanged((user) => {
       if (user) {
-        console.log(user);
         navigate("/home");
       }
     });
