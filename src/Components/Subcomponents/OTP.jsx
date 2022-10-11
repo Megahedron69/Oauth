@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import OtpInput from "react18-input-otp";
 import { onSubmitOtp } from "../../Utilities/auth";
-import Countdown from "react-countdown";
+import Countdown, { zeroPad } from "react-countdown";
 import { ResendOtp } from "../../Utilities/auth";
 
 const OTP = ({ phoneNum }) => {
   const otpTimer = 120000;
   const [startTimer, setstartTimer] = useState(true);
   const [Otp, setOtp] = useState("");
+
+  const time = useMemo(() => {
+    return Date.now() + otpTimer;
+  }, []);
 
   const getMaskedNumber = (string) => {
     string = phoneNum;
@@ -18,7 +22,7 @@ const OTP = ({ phoneNum }) => {
   const renderer = ({ minutes, seconds }) => {
     return (
       <span>
-        {minutes}:{seconds} seconds
+        {zeroPad(minutes)}:{zeroPad(seconds)} minutes
       </span>
     );
   };
@@ -35,7 +39,7 @@ const OTP = ({ phoneNum }) => {
         </div>
         <div className="flex flex-row justify-center text-center px-2 mt-5">
           <OtpInput
-            onChange={(otp) => {
+            onChange={(otp, e) => {
               setOtp(otp);
             }}
             numInputs={6}
@@ -73,7 +77,7 @@ const OTP = ({ phoneNum }) => {
             <span className="font-bold text-gray-400 cursor-not-allowed">
               Resend OTP in{" "}
               <Countdown
-                date={Date.now() + otpTimer}
+                date={time}
                 renderer={renderer}
                 onComplete={(prev) => {
                   setstartTimer(!prev);
