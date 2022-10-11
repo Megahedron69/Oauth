@@ -28,7 +28,6 @@ export const signins = (email, password) => {
       const errorMessage = error.message;
       const increase = () => {
         i++;
-        console.log(i);
         if (i <= 3) {
           console.log(i);
           alertify.warning(
