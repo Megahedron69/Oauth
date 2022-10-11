@@ -29,7 +29,6 @@ export const signins = (email, password) => {
       const increase = () => {
         i++;
         if (i <= 3) {
-          console.log(i);
           alertify.warning(
             `Error: ${errorCode}.
               \n${3 - i} tr${i === 2 ? "y" : "ies"} reamaning `
