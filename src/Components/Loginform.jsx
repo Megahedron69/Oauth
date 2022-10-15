@@ -1,22 +1,39 @@
-import { useState, useEffect } from "react";
-import Socialmediacards from "./Socialmediacards";
-import { persis } from "../Utilities/persistence";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signins } from "../Utilities/auth";
-import { resetPass } from "../Utilities/auth";
 import alertify from "alertifyjs";
 import { getAuth } from "firebase/auth";
 import Countdown from "react-countdown";
 import CookieConsent from "react-cookie-consent";
+import useLocalStorageState from "use-local-storage-state";
+import SimpleReactValidator from "simple-react-validator";
+
+import Socialmediacards from "./Socialmediacards";
+import { persis } from "../Utilities/persistence";
+import { signins, resetPass } from "../Utilities/auth";
 
 const Loginform = () => {
+  const simpleValidator = useRef(
+    new SimpleReactValidator({
+      messages: {
+        email: "Invalid email Id",
+        required: "Do not leave me empty",
+        not_in: "Email id in block list cannot be used",
+      },
+    })
+  );
+
+  const formValid = simpleValidator.current.allValid();
   const initialState = { email: "", password: "" };
   const navigate = useNavigate();
 
   const [isChecked, setisChecked] = useState(false);
   const [formdata, setformdata] = useState(initialState);
+  const [blockedIDs, setblockedIDs] = useLocalStorageState("blockedIds", {
+    defaultValue: ["blocked@gmail.com"],
+  });
   const [togglePass, settogglePass] = useState(false);
   const [errNo, seterrNo] = useState(1);
+  const [errCycle, seterrCycle] = useState(0);
 
   useEffect(() => {
     const auth = getAuth();
@@ -36,6 +53,7 @@ const Loginform = () => {
       };
     });
   };
+
   const setpersis = () => {
     if (isChecked === true) {
       persis("local");
@@ -50,15 +68,25 @@ const Loginform = () => {
     ) : (
       <span></span>
     );
+    errCycle > 2 ? (
+      alertify.error("User has been blocked contact admin")
+    ) : (
+      <span></span>
+    );
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setpersis();
-    setisChecked(false);
-    signins(formdata.email, formdata.password);
-    setformdata(initialState);
-    settogglePass(false);
+    if (!formValid) {
+      simpleValidator.current.showMessages();
+    } else {
+      setpersis();
+      setisChecked(false);
+      simpleValidator.current.hideMessages();
+      signins(formdata.email, formdata.password);
+      setformdata(initialState);
+      settogglePass(false);
+    }
   };
 
   return (
@@ -68,7 +96,8 @@ const Loginform = () => {
           <Countdown
             date={Date.now() + 30000}
             onComplete={() => {
-              seterrNo(1);
+              seterrNo(3);
+              seterrCycle(errCycle + 1);
             }}
           />
         ) : (
@@ -109,7 +138,7 @@ const Loginform = () => {
                 }}
               >
                 <fieldset
-                  disabled={errNo > 3}
+                  disabled={errNo > 3 || errCycle > 2}
                   className={`${
                     errNo > 3 ? "cursor-not-allowed" : "cursor-auto"
                   }`}
@@ -127,7 +156,17 @@ const Loginform = () => {
                       onChange={handlechange}
                       placeholder="Email address"
                       autoComplete="email"
+                      onBlur={() => {
+                        simpleValidator.current.showMessageFor("not_in");
+                      }}
                     />
+                    <span className="mt-2 text-sm text-red-600 dark:text-red-400">
+                      {simpleValidator.current.message(
+                        "not_in",
+                        formdata.email,
+                        ["required", "email", { not_in: blockedIDs }]
+                      )}
+                    </span>
                   </div>
 
                   <div className="mb-6">
@@ -140,6 +179,9 @@ const Loginform = () => {
                         name="password"
                         value={formdata.password}
                         onChange={handlechange}
+                        onBlur={() => {
+                          simpleValidator.current.showMessageFor("required");
+                        }}
                       />
                       <button
                         type="button"
@@ -167,6 +209,13 @@ const Loginform = () => {
                         )}
                       </button>
                     </div>
+                    <span className="mt-2 text-sm text-red-600 dark:text-red-400">
+                      {simpleValidator.current.message(
+                        "required",
+                        formdata.password,
+                        "required"
+                      )}
+                    </span>
                   </div>
 
                   <div className="flex justify-between items-center mb-6">
@@ -194,10 +243,18 @@ const Loginform = () => {
                   <div className="text-center lg:text-left">
                     <button
                       type="submit"
+                      disabled={!formValid}
                       onClick={() => {
-                        seterrNo(errNo + 1);
+                        formValid ? seterrNo(errNo + 1) : seterrNo(errNo);
+                        if (errCycle >= 2) {
+                          setblockedIDs([...blockedIDs, formdata.email]);
+                        }
                       }}
-                      className="inline-block px-7 py-3 bg-blue-600 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                      className={
+                        formValid
+                          ? `inline-block px-7 py-3 bg-blue-600 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out`
+                          : `px-7 py-3 text-white bg-blue-400 dark:bg-blue-500 cursor-not-allowed font-medium leading-snug uppercase rounded shadow-md text-sm text-center`
+                      }
                     >
                       Login
                     </button>

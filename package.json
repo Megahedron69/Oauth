@@ -18,6 +18,8 @@
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "react18-input-otp": "^1.1.0",
+    "simple-react-validator": "^1.6.2",
+    "use-local-storage-state": "^18.1.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
