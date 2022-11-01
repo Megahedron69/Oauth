@@ -12,6 +12,16 @@ import {
   signInWithPhoneNumber,
   sendPasswordResetEmail,
 } from "firebase/auth";
+import { auth, database } from "../firebaseconfig";
+import {
+  getDatabase,
+  ref,
+  push,
+  update,
+  onValue,
+  child,
+  get,
+} from "firebase/database";
 import alertify from "alertifyjs";
 import "alertifyjs/build/css/alertify.css";
 
@@ -58,6 +68,41 @@ export const signingoogle = () => {
     });
 };
 
+export const writeUserData = (blockname) => {
+  const db = getDatabase();
+  let keyz = push(ref(db, "blockedusers"));
+  var postID = keyz.key;
+  update(
+    ref(db, "blockedusers"),
+    {
+      [`${postID}`]: blockname,
+    },
+    { merge: true }
+  );
+
+  console.log("writing");
+};
+
+export const readData = () => {
+  const blocklist = [];
+  const dbRef = ref(getDatabase());
+  get(child(dbRef, "blockedusers"))
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const adata = Object.values(data);
+        return blocklist.push(adata);
+      } else {
+        console.log("No data available");
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  return blocklist;
+};
+const a = readData();
+console.log(typeof a);
 export const signingithub = () => {
   const provider = new GithubAuthProvider();
   const auth = getAuth();

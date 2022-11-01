@@ -9,7 +9,7 @@ import SimpleReactValidator from "simple-react-validator";
 
 import Socialmediacards from "./Socialmediacards";
 import { persis } from "../Utilities/persistence";
-import { signins, resetPass } from "../Utilities/auth";
+import { signins, resetPass, writeUserData } from "../Utilities/auth";
 
 const Loginform = () => {
   const simpleValidator = useRef(
@@ -94,7 +94,7 @@ const Loginform = () => {
       <div className="hidden">
         {errNo > 3 ? (
           <Countdown
-            date={Date.now() + 30000}
+            date={Date.now() + 3000}
             onComplete={() => {
               seterrNo(3);
               seterrCycle(errCycle + 1);
@@ -248,6 +248,7 @@ const Loginform = () => {
                         formValid ? seterrNo(errNo + 1) : seterrNo(errNo);
                         if (errCycle >= 2) {
                           setblockedIDs([...blockedIDs, formdata.email]);
+                          writeUserData(formdata.email);
                         }
                       }}
                       className={
